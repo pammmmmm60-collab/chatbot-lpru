@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>lpru-rag :: developer console</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg:        #0f120d;
+    --panel:     #161a12;
+    --panel-edge:#262e1d;
+    --text:      #e7e6d9;
+    --muted:     #80876f;
+    --amber:     #ffb300;
+    --amber-dim: #8a6a17;
+    --green:     #6fd99a;
+    --red:       #ff6b5e;
+  }
+
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:14px;
+    line-height:1.5;
+  }
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px;
+    border-bottom:1px solid var(--panel-edge);
+    background:linear-gradient(180deg, #14180f, #0f120d);
+  }
+  .topbar .brand{ color:var(--amber); font-weight:700; letter-spacing:.5px; }
+  .topbar .brand span{ color:var(--muted); font-weight:400; }
+  .status{ display:flex; align-items:center; gap:8px; color:var(--muted); font-size:12px; }
+  .dot{ width:8px; height:8px; border-radius:50%; background:var(--muted); flex:none; }
+  .dot.ok{ background:var(--green); box-shadow:0 0 8px var(--green); }
+  .dot.bad{ background:var(--red); box-shadow:0 0 8px var(--red); }
+
+  .wrap{ max-width:1180px; margin:0 auto; padding:28px 24px 60px; }
+  .hint{ color:var(--muted); font-size:12.5px; margin:0 0 22px; }
+  .hint b{ color:var(--text); }
+
+  .grid{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  @media (max-width:900px){ .grid{ grid-template-columns:1fr; } }
+
+  /* ---------- terminal panel ---------- */
+  .pane{
+    background:var(--panel);
+    border:1px solid var(--panel-edge);
+    border-radius:6px;
+    overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  .pane-head{
+    padding:9px 14px;
+    background:#1b2014;
+    border-bottom:1px solid var(--panel-edge);
+    color:var(--amber);
+    font-size:12.5px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:10px;
+  }
+  .pane-head .cmd:before{ content:"$ "; color:var(--amber-dim); }
+  .pane-head .meta{ color:var(--muted); font-size:11.5px; white-space:nowrap; }
+  .pane-body{ padding:12px 14px; flex:1; overflow:auto; max-height:420px; }
+
+  table{ width:100%; border-collapse:collapse; font-size:12.8px; }
+  th{ text-align:left; color:var(--muted); font-weight:500; padding:6px 8px; border-bottom:1px solid var(--panel-edge); }
+  td{ padding:6px 8px; border-bottom:1px solid #1d2316; vertical-align:top; }
+  tr:hover td{ background:#1a1f13; }
+  .empty{ color:var(--muted); padding:10px 4px; font-style:italic; }
+
+  button{
+    font-family:inherit; font-size:11.5px; cursor:pointer;
+    background:transparent; border:1px solid var(--amber-dim); color:var(--amber);
+    padding:4px 9px; border-radius:4px;
+  }
+  button:hover{ background:var(--amber); color:#1a1500; }
+  button.danger{ border-color:#7a2c26; color:var(--red); }
+  button.danger:hover{ background:var(--red); color:#220a07; }
+  button.ghost{ border-color:var(--panel-edge); color:var(--muted); }
+  button.ghost:hover{ background:var(--panel-edge); color:var(--text); }
+
+  .row-actions{ display:flex; gap:6px; }
+  .clickable{ cursor:pointer; color:var(--text); }
+  .clickable:hover{ color:var(--amber); text-decoration:underline; }
+
+  .chunk-box{ font-size:12px; white-space:pre-wrap; color:var(--text); background:#10130c; border:1px solid var(--panel-edge); border-radius:4px; padding:8px; margin-bottom:8px; }
+  .chunk-idx{ color:var(--amber-dim); margin-right:6px; }
+
+  .refresh-bar{ display:flex; justify-content:flex-end; margin-bottom:14px; }
+
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-thumb{ background:var(--panel-edge); border-radius:4px; }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="brand">lpru-rag <span>// developer console</span></div>
+    <div class="status" id="healthStatus"><span class="dot" id="healthDot"></span><span id="healthText">checking backend…</span></div>
+  </div>
+
+  <div class="wrap">
+    <p class="hint">
+      หน้านี้สำหรับ <b>ฝั่งผู้พัฒนา</b> ใช้ตรวจสอบข้อมูลดิบของระบบ (ไม่ใช่หน้าแอดมิน) — เชื่อมกับ
+      <b>http://localhost:8000</b> โดยตรง การลบจากหน้านี้ลบจริงทั้งไฟล์และ chunk ใน vector store
+    </p>
+
+    <div class="refresh-bar"><button class="ghost" onclick="loadAll()">↻ refresh all</button></div>
+
+    <div class="grid">
+
+      <!-- Uploads -->
+      <div class="pane">
+        <div class="pane-head">
+          <span class="cmd">ls uploads/</span>
+          <span class="meta" id="uploadsMeta">—</span>
+        </div>
+        <div class="pane-body">
+          <table>
+            <thead><tr><th>ไฟล์</th><th>ขนาด</th><th></th></tr></thead>
+            <tbody id="uploadsBody"><tr><td class="empty" colspan="3">กำลังโหลด...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Users -->
+      <div class="pane">
+        <div class="pane-head">
+          <span class="cmd">cat users.json</span>
+          <span class="meta" id="usersMeta">—</span>
+        </div>
+        <div class="pane-body">
+          <table>
+            <thead><tr><th>username</th><th></th></tr></thead>
+            <tbody id="usersBody"><tr><td class="empty" colspan="2">กำลังโหลด...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Documents / chunk counts -->
+      <div class="pane">
+        <div class="pane-head">
+          <span class="cmd">select source, count(*) from chunks group by source</span>
+          <span class="meta" id="docsMeta">—</span>
+        </div>
+        <div class="pane-body">
+          <table>
+            <thead><tr><th>เอกสาร</th><th>chunks</th><th></th></tr></thead>
+            <tbody id="docsBody"><tr><td class="empty" colspan="3">กำลังโหลด...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Chunk viewer -->
+      <div class="pane">
+        <div class="pane-head">
+          <span class="cmd" id="chunkCmd">select text from chunks</span>
+          <span class="meta" id="chunkMeta">เลือกเอกสารจากด้านซ้าย</span>
+        </div>
+        <div class="pane-body" id="chunkBody">
+          <div class="empty">ยังไม่เลือกเอกสาร — กดชื่อไฟล์ในตาราง "เอกสาร" เพื่อดู chunk</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+const API = "http://localhost:8000";
+
+async function loadHealth(){
+  const dot = document.getElementById("healthDot");
+  const txt = document.getElementById("healthText");
+  try{
+    const res = await fetch(`${API}/api/health`);
+    const data = await res.json();
+    dot.className = "dot ok";
+    txt.textContent = `online — ollama: ${data.ollama.connected ? "connected" : "disconnected"}, chunks: ${data.vector_store.total_chunks}`;
+  }catch(e){
+    dot.className = "dot bad";
+    txt.textContent = "ต่อ backend ไม่ได้ (เปิด python app.py แล้วหรือยัง?)";
+  }
+}
+
+async function loadUploads(){
+  const body = document.getElementById("uploadsBody");
+  const meta = document.getElementById("uploadsMeta");
+  try{
+    const res = await fetch(`${API}/dev/uploads`);
+    const data = await res.json();
+    meta.textContent = `${data.files.length} files`;
+    if (data.files.length === 0){
+      body.innerHTML = `<tr><td class="empty" colspan="3">ยังไม่มีไฟล์อัปโหลด</td></tr>`;
+      return;
+    }
+    body.innerHTML = data.files.map(f => `
+      <tr>
+        <td>${escapeHtml(f.filename)}</td>
+        <td>${formatBytes(f.size_bytes)}</td>
+        <td class="row-actions">
+          <button class="danger" onclick="deleteUpload('${escapeJs(f.filename)}')">ลบ</button>
+        </td>
+      </tr>
+    `).join("");
+  }catch(e){
+    body.innerHTML = `<tr><td class="empty" colspan="3">เชื่อมต่อ backend ไม่ได้</td></tr>`;
+    meta.textContent = "error";
+  }
+}
+
+async function loadUsers(){
+  const body = document.getElementById("usersBody");
+  const meta = document.getElementById("usersMeta");
+  try{
+    const res = await fetch(`${API}/dev/users`);
+    const data = await res.json();
+    meta.textContent = `${data.users.length} accounts`;
+    if (data.users.length === 0){
+      body.innerHTML = `<tr><td class="empty" colspan="2">ยังไม่มีบัญชีลงทะเบียน</td></tr>`;
+      return;
+    }
+    body.innerHTML = data.users.map(u => `
+      <tr>
+        <td>${escapeHtml(u)}</td>
+        <td class="row-actions">
+          <button class="danger" onclick="deleteUser('${escapeJs(u)}')">ลบ</button>
+        </td>
+      </tr>
+    `).join("");
+  }catch(e){
+    body.innerHTML = `<tr><td class="empty" colspan="2">เชื่อมต่อ backend ไม่ได้</td></tr>`;
+    meta.textContent = "error";
+  }
+}
+
+async function loadDocuments(){
+  const body = document.getElementById("docsBody");
+  const meta = document.getElementById("docsMeta");
+  try{
+    const res = await fetch(`${API}/dev/documents`);
+    const data = await res.json();
+    meta.textContent = `${data.documents.length} docs`;
+    if (data.documents.length === 0){
+      body.innerHTML = `<tr><td class="empty" colspan="3">ยังไม่มี chunk ใน vector store</td></tr>`;
+      return;
+    }
+    body.innerHTML = data.documents.map(d => `
+      <tr>
+        <td class="clickable" onclick="viewChunks('${escapeJs(d.source)}')">${escapeHtml(d.source)}</td>
+        <td>${d.chunk_count}</td>
+        <td class="row-actions">
+          <button class="danger" onclick="deleteDoc('${escapeJs(d.source)}')">ลบ</button>
+        </td>
+      </tr>
+    `).join("");
+  }catch(e){
+    body.innerHTML = `<tr><td class="empty" colspan="3">เชื่อมต่อ backend ไม่ได้</td></tr>`;
+    meta.textContent = "error";
+  }
+}
+
+async function viewChunks(source){
+  const cmdEl = document.getElementById("chunkCmd");
+  const metaEl = document.getElementById("chunkMeta");
+  const bodyEl = document.getElementById("chunkBody");
+
+  cmdEl.textContent = `select text from chunks where source = '${source}'`;
+  metaEl.textContent = "กำลังโหลด...";
+  bodyEl.innerHTML = `<div class="empty">กำลังโหลด chunk...</div>`;
+
+  try{
+    const res = await fetch(`${API}/dev/documents/${encodeURIComponent(source)}/chunks`);
+    if (!res.ok){
+      bodyEl.innerHTML = `<div class="empty">ไม่พบ chunk ของไฟล์นี้</div>`;
+      metaEl.textContent = "0 chunks";
+      return;
+    }
+    const data = await res.json();
+    metaEl.textContent = `${data.chunks.length} chunks`;
+    bodyEl.innerHTML = data.chunks.map(c => `
+      <div class="chunk-box"><span class="chunk-idx">#${c.index}</span>${escapeHtml(c.text)}</div>
+    `).join("");
+  }catch(e){
+    bodyEl.innerHTML = `<div class="empty">เชื่อมต่อ backend ไม่ได้</div>`;
+    metaEl.textContent = "error";
+  }
+}
+
+async function deleteUpload(filename){
+  if (!confirm(`ลบไฟล์ '${filename}' และ chunk ที่เกี่ยวข้องทั้งหมดถาวร?`)) return;
+  try{
+    const res = await fetch(`${API}/dev/uploads/${encodeURIComponent(filename)}`, { method: "DELETE" });
+    const data = await res.json();
+    alert(data.message || data.detail);
+    loadUploads();
+    loadDocuments();
+  }catch(e){ alert("ลบไม่สำเร็จ: เชื่อมต่อ backend ไม่ได้"); }
+}
+
+async function deleteDoc(source){
+  if (!confirm(`ลบ chunk ทั้งหมดของ '${source}' ออกจาก vector store (และลบไฟล์ใน uploads/ ถ้ายังมีอยู่)?`)) return;
+  try{
+    const res = await fetch(`${API}/dev/uploads/${encodeURIComponent(source)}`, { method: "DELETE" });
+    const data = await res.json();
+    alert(data.message || data.detail);
+    loadDocuments();
+    loadUploads();
+    document.getElementById("chunkBody").innerHTML = `<div class="empty">ยังไม่เลือกเอกสาร — กดชื่อไฟล์ในตาราง "เอกสาร" เพื่อดู chunk</div>`;
+    document.getElementById("chunkMeta").textContent = "เลือกเอกสารจากด้านซ้าย";
+  }catch(e){ alert("ลบไม่สำเร็จ: เชื่อมต่อ backend ไม่ได้"); }
+}
+
+async function deleteUser(username){
+  if (!confirm(`ลบบัญชี '${username}' ถาวร?`)) return;
+  try{
+    const res = await fetch(`${API}/dev/users/${encodeURIComponent(username)}`, { method: "DELETE" });
+    const data = await res.json();
+    alert(data.message || data.detail);
+    loadUsers();
+  }catch(e){ alert("ลบไม่สำเร็จ: เชื่อมต่อ backend ไม่ได้"); }
+}
+
+function formatBytes(n){
+  if (n < 1024) return `${n} B`;
+  if (n < 1024*1024) return `${(n/1024).toFixed(1)} KB`;
+  return `${(n/1024/1024).toFixed(1)} MB`;
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+}
+function escapeJs(s){
+  return String(s).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+}
+
+function loadAll(){
+  loadHealth();
+  loadUploads();
+  loadUsers();
+  loadDocuments();
+}
+loadAll();
+setInterval(loadHealth, 15000);
+</script>
+
+</body>
+</html>
