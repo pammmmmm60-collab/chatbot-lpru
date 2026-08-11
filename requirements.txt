@@ -1,6 +1,6 @@
 flask==3.0.3
 flask-cors==4.0.1
-faiss-cpu==1.8.0
+faiss-cpu==1.15.0
 sentence-transformers==3.0.1
 langchain==0.2.16
 langchain-community==0.2.16
