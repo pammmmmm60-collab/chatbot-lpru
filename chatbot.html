@@ -4,28 +4,99 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>Chatbot LPRU</title>
-    <link rel="stylesheet" href="style.css?v=10">
+    <link rel="stylesheet" href="style.css?v=22">
 </head>
 <body class="bg-Chatbot">
 
     <div class="navbar">
-        <h3 id="titleChat"> Chatbot LPRU <span id="roleName"></span></h3>
+        <div class="navbar-left">
+            <!-- ปุ่มกางแถบด้านข้างกลับมา — ย้ายขึ้นมาไว้ในแถบเมนูด้านบน (ติดกับชื่อหน้า) ตามที่ขอ
+                 เพื่อความสวยงาม โผล่ขึ้นเฉพาะตอนแถบด้านข้างถูกพับเก็บ (ดู java.js/style.css) -->
+            <button type="button" id="sidebarExpandBtn" class="sidebar-expand-btn"
+                    title="แสดงแถบด้านข้าง" aria-label="แสดงแถบด้านข้าง">☰</button>
+            <h3 id="titleChat"> Chatbot LPRU <span id="roleName"></span></h3>
+        </div>
+        <!-- เหลือแค่ปุ่ม "แชทใหม่" บนแถบเมนูด้านบนตามที่ขอ ส่วนที่เหลือ (ประวัติแชท/ชื่อผู้ใช้/
+             คำถามแนะนำ) ย้ายลงไปอยู่ในแถบด้านข้าง (#appSidebar) ทั้งหมดแล้ว -->
         <div class="navbar-actions">
-            <button id="userAvatarBtn" class="naechat" type="button"></button>
             <button id="NewChat" class="naechat"> แชทใหม่ </button>
         </div>
     </div>
 
-    <hr> 
-    
-    <div class="chat-display">
+    <hr>
+
+    <!-- โครงหน้าจอแบบแชทบอทจริง — แถบด้านข้างพับเก็บได้ (ฟีเจอร์ใหม่) + พื้นที่แชทหลัก
+         เชื่อมกับ /conversations/* ใน main.py เหมือนเดิม แค่ย้ายตำแหน่ง UI จากแถบเลื่อน
+         (drawer) มาเป็นแถบด้านข้างถาวรที่พับ/กางได้แทน -->
+    <div class="chat-body-layout" id="chatBodyLayout">
+
+        <aside class="app-sidebar" id="appSidebar">
+            <div class="sidebar-top">
+                <button type="button" id="sidebarCollapseBtn" class="sidebar-collapse-btn"
+                        title="พับแถบด้านข้าง" aria-label="พับแถบด้านข้าง">«</button>
+            </div>
+
+            <!-- ปุ่มคำถามแนะนำประจำปี — ย้ายมาจากแถบเมนูด้านบน เติมข้อมูลด้วย java.js จาก
+                 /api/suggested-questions ตามปีของผู้ใช้ที่ล็อกอินอยู่ ซ่อนอัตโนมัติถ้ารุ่นนี้
+                 ยังไม่มีคำถามแนะนำ กดแล้วเด้งป๊อบอัพขึ้นมาให้เลือก (ดู #sqModalOverlay ท้ายหน้า) -->
+            <button id="suggestedQuestionsBtn" class="sidebar-action-btn" type="button">💡 คำถามแนะนำ</button>
+
+            <!-- เลือกโมเดล AI — ฟีเจอร์ใหม่ เฉพาะบทบาทอาจารย์/บุคลากร (role=teacher) เท่านั้น
+                 ซ่อนไว้ด้วย display:none เป็นค่าเริ่มต้น (นักศึกษาจะไม่เห็นเลย) java.js จะเปิดให้
+                 เห็นเฉพาะตอนยืนยันจาก /api/models ว่าบัญชีนี้เป็นอาจารย์/บุคลากรจริงเท่านั้น
+                 (เช็คซ้ำที่ backend เสมอ ไม่เชื่อ role จาก URL ฝั่งนี้) เปลี่ยนโมเดลแล้วมีผลกับ
+                 แชทจริงของเซสชันนี้ทันที ไม่กระทบนักศึกษาคนอื่นหรือค่าเริ่มต้นของระบบ -->
+            <div class="model-select-block" id="modelSelectBlock" style="display:none;">
+                <label class="sidebar-section-label" for="aiModelSelect">โมเดล AI (อาจารย์/บุคลากร)</label>
+                <select id="aiModelSelect" class="sidebar-model-select">
+                    <option value="">กำลังโหลด...</option>
+                </select>
+            </div>
+
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-section-label">ประวัติแชท</div>
+            <div class="history-list" id="historyList">
+                </div>
+
+            <!-- ชื่อผู้ใช้ + ออกจากระบบ — ย้ายมาไว้ล่างสุดของแถบด้านข้างตามที่ขอ (history-list
+                 ด้านบนมี flex:1 อยู่แล้ว จึงดันสองปุ่มนี้ให้ติดขอบล่างเสมอ โดยไม่ต้องเพิ่ม CSS ใหม่
+                 สำหรับจัดตำแหน่ง) คลิกชื่อผู้ใช้เพื่อเปลี่ยนชื่อได้เหมือนเดิม -->
+            <div class="sidebar-divider"></div>
+            <button id="userAvatarBtn" class="sidebar-user-btn" type="button"></button>
+            <button id="logoutBtn" class="sidebar-action-btn sidebar-logout-btn" type="button">
+                <img src="logout-icon.png" alt="" class="sidebar-logout-icon">
+                ออกจากระบบ
+            </button>
+        </aside>
+
+        <div class="chat-main">
+            <div class="chat-display">
+                </div>
+
+            <div class="input-area">
+                <input type="text" id="inputMessage" placeholder="พิมพ์ข้อความ..">
+                <span> </span>
+<!--                 <input type="button" id="Send" value=" ➤ "> -->
+                 <button type="button" id="Send">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+</button>
+            </div>
         </div>
 
-    <div class="input-area">
-        <input type="text" id="inputMessage" placeholder="พิมพ์ข้อความ..">
-        <span> </span>
-        <input type="button" id="Send" value=" ➤ ">
     </div>
-    <script src="java.js?v=11"></script>
+
+    <!-- ป๊อบอัพคำถามแนะนำ — เปิดเมื่อกดปุ่ม "คำถามแนะนำ" ในแถบด้านข้าง (ฟีเจอร์ใหม่) -->
+    <div class="sq-modal-overlay" id="sqModalOverlay">
+        <div class="sq-modal">
+            <div class="sq-modal-header">
+                <h4>คำถามแนะนำ</h4>
+                <button type="button" id="sqModalCloseBtn" class="sq-modal-close" aria-label="ปิด">×</button>
+            </div>
+            <div class="sq-modal-body" id="sqModalBody">
+                </div>
+        </div>
+    </div>
+
+    <script src="java.js?v=25"></script>
 </body>
 </html>

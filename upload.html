@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>edit/upload</title>
-    <link rel="stylesheet" href="style.css?v=10">
+    <link rel="stylesheet" href="style.css?v=23">
 </head>
 <body class="bg-upload">
     <div class="upload-container">
@@ -14,17 +14,68 @@
          (admin_upload ใน main.py) รองรับอยู่แล้ว แต่เดิม HTML ยังไม่มีช่องนี้ให้กรอก -->
     <form id="uploadForm">
         <h3>อัปโหลดไฟล์ใหม่</h3>
-        <input type="file" id="fileUpload" accept=".pdf, .txt" required>
+        <!-- accept เดิมมีแค่ .pdf, .txt ทำให้เลือกไฟล์ .docx/.md ผ่าน dialog ของเบราว์เซอร์ไม่ได้เลย
+             ทั้งที่ backend (ALLOWED_EXT ใน main.py) รองรับทั้ง 4 นามสกุลอยู่แล้ว จึงเพิ่มให้ตรงกัน -->
+        <input type="file" id="fileUpload" accept=".pdf, .txt, .docx, .md" required>
         <input type="text" id="fileYear" placeholder="ปีการศึกษา เช่น 66" title="กรอกรหัสรุ่น 2 หลัก เช่น 66 หรือเว้นว่างไว้ถ้าเป็นเอกสารกลางที่ทุกรุ่นเห็น" maxlength="2" inputmode="numeric">
         <input type="submit" value="อัปโหลด">
     </form>
+        <section id="changePasswordSection" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border);">
+    <h2>เปลี่ยนรหัสผ่านแอดมิน</h2>
+    <form id="changePasswordForm">
+        <input type="password" id="oldPassword" placeholder="รหัสผ่านเดิม" required style="padding: 10px; margin-right: 10px; border: 1px solid var(--border); border-radius: 6px;">
+        <input type="password" id="newPassword" placeholder="รหัสผ่านใหม่ (อย่างน้อย 6 ตัว)" required style="padding: 10px; margin-right: 10px; border: 1px solid var(--border); border-radius: 6px;">
+        <input type="submit" value="เปลี่ยนรหัสผ่าน">
+    </form>
+</section>
+    <hr>
 
-    <!-- ปุ่มเดาปีอัตโนมัติสำหรับไฟล์เก่าที่อัปโหลดไว้ก่อนมีฟีเจอร์แยกปี — เชื่อมกับ
-         /admin/files/auto-tag ที่ java.js เขียนไว้รองรับแล้วแต่ยังไม่มีปุ่มให้กด -->
-    <div class="auto-tag-bar">
-        <button type="button" id="autoTagBtn">🏷️ เดาปีอัตโนมัติสำหรับไฟล์เก่าทั้งหมด</button>
-    </div>
+    <!-- คำถามแนะนำประจำปี — ฟีเจอร์ใหม่ เชื่อมกับ /admin/suggested-questions ใน main.py
+         ใช้ตั้งไกด์ไลน์คำถาม-คำตอบให้ผู้ใช้แต่ละรุ่นเห็นเป็นปุ่มลัดในหน้าแชท (chatbot.html)
+         เป็นส่วนที่เพิ่มใหม่ทั้งหมด แยกจากการจัดการไฟล์คู่มือด้านบนโดยสิ้นเชิง -->
+    <section id="sqSection">
+        <h2 id="sqTitle">คำถามแนะนำประจำปี</h2>
+        <p class="sq-hint">
+            ตั้งคำถามตัวอย่างให้ผู้ใช้แต่ละรุ่นเห็นเป็นปุ่มลัดในหน้าแชท ใช้เป็นไกด์ไลน์ว่าระบบตอบเรื่องอะไรได้บ้าง
+            เว้นช่อง "ปีการศึกษา" ว่างไว้ถ้าต้องการให้เป็นคำถามกลางที่ทุกรุ่นเห็นเหมือนกัน กดคำถามแนะนำแล้ว
+            จะส่งเข้า AI ตอบตามปกติเสมอ
+        </p>
 
+        <form id="sqForm">
+            <input type="text" id="sqYear" placeholder="ปีการศึกษา เช่น 66 (เว้นว่าง = ทุกรุ่น)" title="กรอกรหัสรุ่น 2 หลัก เช่น 66 หรือเว้นว่างไว้ถ้าเป็นคำถามกลางที่ทุกรุ่นเห็น" maxlength="2" inputmode="numeric">
+            <input type="text" id="sqQuestion" placeholder="ข้อความคำถามแนะนำ เช่น ต้องเข้าร่วมกิจกรรมกี่ชั่วโมง?">
+            <br>
+            <input type="submit" value="เพิ่มคำถามแนะนำ">
+        </form>
+
+        <!-- นำเข้าคำถามแนะนำจากไฟล์ Excel แบบยกชุด — ฟีเจอร์ใหม่ เชื่อมกับ
+             /admin/suggested-questions/import ใน main.py ใช้กรณีมีคำถามจำนวนมากอยู่แล้ว
+             ไม่ต้องกรอกทีละข้อผ่านฟอร์มด้านบน -->
+        <div class="sq-import-bar">
+            <label for="sqImportFile" class="sq-import-label">นำเข้าจากไฟล์ Excel:</label>
+            <input type="file" id="sqImportFile" accept=".xlsx">
+            <button type="button" id="sqImportBtn">นำเข้าคำถามแนะนำ</button>
+            <span class="sq-import-hint">รูปแบบไฟล์: คอลัมน์ A = ปีการศึกษา (เว้นว่าง = ทุกรุ่น), คอลัมน์ B = คำถามแนะนำ</span>
+        </div>
+
+        <table border="1"
+        width="100%"
+        cellspacing="0"
+        cellpadding="8"
+        style="text-align: center;">
+
+            <thead style="background-color: #f2f2f2;">
+                <tr>
+                    <th>ลำดับ</th>
+                    <th>ปีการศึกษา</th>
+                    <th>คำถามแนะนำ</th>
+                    <th>จัดการ</th>
+                </tr>
+            </thead>
+            <tbody id="sqTableBody">
+                </tbody>
+        </table>
+    </section>
 
     <form id="searchForm">
         <h2 id="listTitle" style="display: inline;">รายการไฟล์คู่มือ</h2> 
@@ -53,6 +104,6 @@
             </tbody>
     </table>
     </div>
-<script src="java.js?v=11"></script>
+<script src="java.js?v=21"></script>
 </body>
 </html>

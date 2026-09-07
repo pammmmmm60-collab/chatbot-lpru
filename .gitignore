@@ -216,3 +216,21 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ==========================================================================
+# LPRU Chatbot — ไฟล์เฉพาะของโปรเจกต์นี้ที่ห้ามหลุดขึ้น git เด็ดขาด (เพิ่มเข้ามา เพราะ
+# .gitignore เดิมด้านบนเป็น template มาตรฐานของ Python ทั่วไป ไม่ได้กันไฟล์เฉพาะของระบบนี้
+# ไว้เลยแม้แต่บรรทัดเดียว — ถ้า push ขึ้น git ทั้งที่ไฟล์เหล่านี้ยังอยู่ hash รหัสผ่านของ
+# นักศึกษา/แอดมินจริง และประวัติแชทของนักศึกษาทุกคน จะติดไปอยู่ใน git history ถาวร)
+# ==========================================================================
+users.json
+admin_config.json
+students_roster.json
+vector_store/
+chat_history/
+conversations/
+uploads/
+*.bak
+*.bak[0-9]
+*.before_*
+lpru-chatbot-handoff-*.zip

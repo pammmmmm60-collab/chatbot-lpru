@@ -1,0 +1,66 @@
+services:
+  # ---------------------------------------------------------------------
+  # Ollama LLM server (รันโมเดล gemma3:4b และอื่นๆ)
+  # ---------------------------------------------------------------------
+  ollama:
+    image: ollama/ollama:latest
+    container_name: lpru-ollama
+    restart: unless-stopped
+    # ไม่ publish port ออกนอกเครื่องโดยค่าเริ่มต้น — คุยกับแอปผ่าน internal network เท่านั้น
+    # ถ้าต้องการเข้าถึง Ollama จาก host ให้เปิดคอมเมนต์ด้านล่าง
+    # ports:
+    #   - "11434:11434"
+    volumes:
+      # persist โมเดลที่ pull ไว้ ไม่ต้องดาวน์โหลดใหม่ทุกครั้งที่ restart
+      - ollama_models:/root/.ollama
+    networks:
+      - chatbot-net
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # ---------------------------------------------------------------------
+  # แอป FastAPI (main.py)
+  # ---------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lpru-chatbot
+    restart: unless-stopped
+    depends_on:
+      ollama:
+        condition: service_healthy
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    environment:
+      # ชี้ไปที่ service ollama ผ่าน internal network (ไม่ใช่ localhost)
+      OLLAMA_HOST: "http://ollama:11434"
+      ADMIN_EMAIL: "${ADMIN_EMAIL:-admin@gmail.com}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD:-123456}"
+    volumes:
+      # ---- ข้อมูลที่ต้องคงอยู่ (ไม่หายตอน container restart) ----
+      - ./vector_store:/app/vector_store              # FAISS index + metadata
+      - ./uploads:/app/uploads                        # ไฟล์คู่มือที่แอดมินอัปโหลด
+      - ./conversations:/app/conversations            # ประวัติแชทของนักศึกษา
+      - ./chat_history:/app/chat_history              # ประวัติแชทเพิ่มเติม
+      - ./lpru_chatbot.db:/app/lpru_chatbot.db        # ฐานข้อมูล SQLite (users/sessions/แชท)
+      - ./suggested_questions.json:/app/suggested_questions.json  # คำถามแนะนำ
+      # cache โมเดล embedding (multilingual-e5-base) ไม่ต้องดาวน์โหลดใหม่ทุกครั้ง
+      - hf_cache:/models/hf
+    networks:
+      - chatbot-net
+
+# -------------------------------------------------------------------------
+# named volumes สำหรับข้อมูลที่ Docker จัดการเอง
+# -------------------------------------------------------------------------
+volumes:
+  ollama_models:   # โมเดล Ollama ที่ pull ไว้
+  hf_cache:        # cache ของ HuggingFace / sentence-transformers
+
+networks:
+  chatbot-net:
+    driver: bridge

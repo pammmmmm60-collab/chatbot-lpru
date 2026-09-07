@@ -6,6 +6,7 @@
    ========================================================= */
 
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
 
 :root {
     --maroon-950: #2c0810;   /* พื้นหลังหน้าล็อกอิน/แอดมิน เข้มสุด */
@@ -161,7 +162,7 @@ body.bg-Chatbot {
 }
 #inputMessage::placeholder { color: var(--ink-500); }
 
-#Send {
+#Send {  /* ปุ่มส่งข้อความ วงกลม (สลับเป็นไอคอนหยุดตอนกำลังตอบ ผ่าน JS ไม่ใช่ CSS) */
     background-color: var(--maroon-800);
     color: white;
     border: none;
@@ -187,7 +188,7 @@ body.bg-Chatbot {
 /* =========================================================
    2) หน้ากรอกรหัสนักศึกษา/บุคลากร — user.html
    ========================================================= */
-body.user {
+body.user {  /* พื้นหลังไล่สีเลือดหมู-ทอง จัดกล่องกรอกรหัสไว้กึ่งกลางจอ */
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -197,7 +198,7 @@ body.user {
     position: relative;
 }
 
-.lang {
+.lang {  /* ปุ่มลอยมุมขวาบน (เหลือไว้เผื่ออนาคต ปัจจุบันไม่มี element ไหนใช้คลาสนี้แล้ว) */
     position: fixed;
     top: 20px;
     right: 24px;
@@ -216,7 +217,7 @@ body.user {
     color: var(--maroon-800);
 }
 
-.user1 {
+.user1 {  /* กล่องขาวตรงกลาง ครอบฟอร์มกรอกรหัสทั้งหมด */
     background-color: #ffffff;
     padding: 44px 36px;
     border-radius: var(--radius-lg);
@@ -227,7 +228,7 @@ body.user {
     position: relative;
     overflow: hidden;
 }
-.user1::before {
+.user1::before {  /* เส้นไล่สีบางๆ ที่ขอบบนของกล่อง (ลายเซ็นเดียวกับทุกกล่องฟอร์มในระบบ) */
     content: "";
     position: absolute;
     top: 0; left: 0; right: 0;
@@ -402,6 +403,9 @@ h6#admin {
     margin-bottom: 10px;
 }
 
+/* หมายเหตุ: #emailadmin/#passwordadmin/#submitadmin ด้านล่างนี้เป็น CSS ที่เหลือค้าง — admin.html
+   ปัจจุบันไม่มีฟอร์มลงทะเบียนแล้ว (ระบบอนุญาตแอดมินบัญชีเดียว) เปลี่ยนเป็นข้อความ+ลิงก์แทน
+   จึงไม่มี element ไหนใช้ id เหล่านี้จริงในหน้าเว็บแล้ว เหลือไว้เฉยๆ ไม่กระทบการทำงาน */
 #emailadmin,
 #passwordadmin {
     width: 100%;
@@ -451,7 +455,7 @@ h6#admin {
     min-height: 100vh;
 }
 
-.upload-container {
+.upload-container {  /* กล่องขาวกว้างครอบทั้งหน้า upload.html (ฟอร์มอัปโหลด + ตารางคำถามแนะนำ + ตารางไฟล์) */
     background-color: #ffffff;
     padding: 40px;
     border-radius: var(--radius-lg);
@@ -541,7 +545,7 @@ hr {
     margin: 30px 0;
 }
 
-table {
+table {  /* สไตล์ตารางกลาง ใช้ร่วมกันทั้งตารางไฟล์คู่มือและตารางคำถามแนะนำใน upload.html (!important เพราะ HTML เดิมมี attribute border/cellpadding ฝังมาด้วย ต้องชนะให้ได้) */
     width: 100%;
     border-collapse: collapse;
     border: 1px solid var(--border) !important;
@@ -605,16 +609,26 @@ table tbody tr:hover { background-color: rgba(201, 162, 39, 0.10); }
     max-width: 520px;
 }
 
-.pang-message {
+.pang-message {  /* ข้อความทักทาย "มีอะหยังหื้อน้องกาสะลองจ่วยก่อเจ้า?" */
     color: #fbf6ea;
     font-size: 30px;
     font-weight: 600;
     line-height: 1.5;
-    margin: 0 0 28px;
+    margin: 0 0 10px;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
 }
 
-.pang-cta {
+.pang-scope {  /* บอกขอบเขตการใช้งาน (ตอบได้แค่คู่มือกิจกรรมนักศึกษา) อยู่ใต้ข้อความทักทายด้านบน */
+    color: #fbf6ea;
+    opacity: 0.85;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.6;
+    margin: 0 0 28px;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+}
+
+.pang-cta {  /* ปุ่ม "เริ่มต้นใช้งาน.." ลิงก์ไปหน้า user.html */
     display: inline-block;
     background-color: #fbf6ea;
     color: var(--maroon-800);
@@ -633,7 +647,7 @@ table tbody tr:hover { background-color: rgba(201, 162, 39, 0.10); }
     transform: translateY(-2px);
 }
 
-.pang-art {
+.pang-art {  /* ฝั่งขวาของหน้า วางรูปมาสคอต (mascot.png) */
     flex: 1 1 340px;
     max-width: 420px;
     align-self: flex-end;
@@ -643,7 +657,7 @@ table tbody tr:hover { background-color: rgba(201, 162, 39, 0.10); }
     height: auto;
     display: block;
     border-radius: 18px 18px 0 0;
-    -webkit-mask-image: linear-gradient(to top, transparent 0%, black 12%);
+    -webkit-mask-image: linear-gradient(to top, transparent 0%, black 12%);  /* จางขอบล่างของรูปให้กลืนกับพื้นหลัง (ไม่ตัดขอบสี่เหลี่ยมแข็งๆ) */
             mask-image: linear-gradient(to top, transparent 0%, black 12%);
     filter: drop-shadow(0 20px 25px rgba(0, 0, 0, 0.35));
 }
@@ -657,11 +671,12 @@ table tbody tr:hover { background-color: rgba(201, 162, 39, 0.10); }
     }
     .pang-text { max-width: 100%; }
     .pang-message { font-size: 24px; }
+    .pang-scope { font-size: 14px; }
     .pang-art { max-width: 260px; align-self: center; }
 }
 
 /* ---------- ดอกกาสะลองลอยรอบข้อความต้อนรับ ---------- */
-.kasalong-field {
+.kasalong-field {  /* กล่องล่องหนครอบพื้นที่ที่ให้กลีบดอกลอยผ่าน (pointer-events:none กันบัง cursor/คลิก) */
     position: absolute;
     inset: -30px -20px auto -20px;
     height: 260px;
@@ -669,10 +684,10 @@ table tbody tr:hover { background-color: rgba(201, 162, 39, 0.10); }
     overflow: visible;
     z-index: 0;
 }
-.pang-text { position: relative; }
-.pang-message, .pang-cta { position: relative; z-index: 1; }
+.pang-text { position: relative; }  /* ต้อง relative ให้ .kasalong-field (absolute) อ้างอิงตำแหน่งจากกล่องนี้ ไม่ใช่ทั้งหน้า */
+.pang-message, .pang-scope, .pang-cta { position: relative; z-index: 1; }  /* ยกข้อความ/ปุ่มให้อยู่เหนือกลีบดอกที่ลอยผ่าน (z-index สูงกว่า) */
 
-.kasalong-petal {
+.kasalong-petal {  /* กลีบดอกแต่ละดอก (svg 7 ดอก .p1-.p7 ด้านล่าง) เริ่มจากโปร่งใส (opacity:0) แล้ว fade in/out ตาม keyframes */
     position: absolute;
     width: 30px;
     height: 30px;
@@ -682,8 +697,8 @@ table tbody tr:hover { background-color: rgba(201, 162, 39, 0.10); }
     animation-timing-function: ease-in-out;
     animation-iteration-count: infinite;
 }
-.petal-shape { fill: #f7e9b8; }
-.petal-center { fill: var(--gold-500); }
+.petal-shape { fill: #f7e9b8; }  /* สีกลีบเริ่มต้น (ถูกเขียนทับเฉพาะเจาะจงต่อกลีบด้านล่างอีกที) */
+.petal-center { fill: var(--gold-500); }  /* จุดกึ่งกลางดอก */
 
 /* ไล่เฉดขาว-เหลืองต่อกลีบด้วย gradient ผ่าน CSS mask ไม่ได้ในทุกเบราว์เซอร์
    จึงกำหนดสีกลีบแต่ละดอกให้ไล่เฉดจากขาวไปเหลืองด้วย custom property */
@@ -693,6 +708,7 @@ table tbody tr:hover { background-color: rgba(201, 162, 39, 0.10); }
 .kasalong-petal .petal-shape:nth-child(4) { fill: #f5e6ac; }
 .kasalong-petal .petal-shape:nth-child(5) { fill: #f0dd93; }
 
+/* ตำแหน่งเริ่มต้น+ขนาด+จังหวะลอยของกลีบแต่ละดอก ตั้งค่าไม่เท่ากันทุกดอกเพื่อให้ดูลอยเป็นธรรมชาติ ไม่พร้อมกันเป๊ะ */
 .p1 { left: 6%;  top: 4%;   width: 26px; height: 26px; animation-duration: 9s;  animation-delay: 0s;   }
 .p2 { left: 22%; top: -6%;  width: 20px; height: 20px; animation-duration: 11s; animation-delay: 1.2s; }
 .p3 { left: 40%; top: 2%;   width: 32px; height: 32px; animation-duration: 8s;  animation-delay: 2.4s; }
@@ -701,7 +717,7 @@ table tbody tr:hover { background-color: rgba(201, 162, 39, 0.10); }
 .p6 { left: 88%; top: -2%;  width: 18px; height: 18px; animation-duration: 9.5s;animation-delay: 1.8s; }
 .p7 { left: 12%; top: 14%;  width: 21px; height: 21px; animation-duration: 13s; animation-delay: 2.9s; }
 
-@keyframes kasalong-float {
+@keyframes kasalong-float {  /* ลอยลงมาจากบนลงล่าง (translate Y เพิ่มขึ้น) พร้อมหมุนและ fade in ตอนกลาง, fade out ตอนต้น/ท้าย */
     0%   { transform: translate(0, 0) rotate(0deg);      opacity: 0; }
     8%   { opacity: 0.9; }
     50%  { transform: translate(6px, 130px) rotate(180deg); opacity: 0.85; }
@@ -735,31 +751,6 @@ input#fileYear {
 }
 input#fileYear:focus {
     border-color: var(--gold-500);
-}
-
-.auto-tag-bar {
-    margin: 4px 0 20px;
-}
-
-#autoTagBtn {
-    padding: 9px 18px;
-    border: 1px solid var(--gold-500);
-    background-color: transparent;
-    color: var(--maroon-800);
-    border-radius: 6px;
-    font-family: 'Prompt', sans-serif;
-    font-size: 13.5px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.25s ease;
-}
-#autoTagBtn:hover {
-    background-color: var(--gold-500);
-    color: var(--maroon-950);
-}
-#autoTagBtn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
 }
 
 /* แถวจัดการท้ายตาราง (สถานะ + ปุ่มลบ) — แทนที่ปุ่ม "✅ อัปเดตแล้ว" เดิมที่กดแล้ว
@@ -805,7 +796,7 @@ input#fileYear:focus {
    8) ตัวบ่งชี้ "กำลังพิมพ์..." ของแชทบอท (chatbot.html) — เพิ่มใหม่
    หมายเหตุ: เป็นการ "เพิ่ม" กฎใหม่เท่านั้น ไม่แก้ไข/ลบกฎเดิมข้างบนแม้แต่บรรทัดเดียว
    ========================================================= */
-.typing-indicator {
+.typing-indicator {  /* กล่องครอบจุด 3 จุด แสดงระหว่างรอ token แรกจาก AI (ดู loadingBox ใน java.js) */
     display: flex;
     align-items: center;
     gap: 5px;
@@ -825,7 +816,7 @@ input#fileYear:focus {
 .typing-dot:nth-child(2) { animation-delay: 0.2s; }
 .typing-dot:nth-child(3) { animation-delay: 0.4s; }
 
-@keyframes typing-bounce {
+@keyframes typing-bounce {  /* จุดกระเด้งขึ้นแล้วลง ทีละจุด (animation-delay ต่างกันด้านบนทำให้ดูไล่กันเป็นคลื่น) */
     0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
     30%           { transform: translateY(-6px); opacity: 1; }
 }
@@ -834,7 +825,7 @@ input#fileYear:focus {
    9) โปรไฟล์ (อวตาร์) ของบอทและผู้ใช้ในหน้าแชท — เพิ่มใหม่
    หมายเหตุ: เป็นการ "เพิ่ม" กฎใหม่เท่านั้น ไม่แก้ไข/ลบกฎเดิมข้างบนแม้แต่บรรทัดเดียว
    ========================================================= */
-.chat-avatar {
+.chat-avatar {  /* วงกลมรูปมาสคอตข้างบับเบิลข้อความฝั่งบอทเท่านั้น (ฝั่งผู้ใช้ไม่มีอวตารตามที่ขอ) */
     flex-shrink: 0;
     width: 36px;
     height: 36px;
@@ -862,6 +853,43 @@ input#fileYear:focus {
 .chat-avatar-clickable:hover {
     border-color: var(--gold-500, #c9a24b);
     transform: scale(1.06);
+}
+
+/* เวลาส่ง/ตอบข้อความ (ฟีเจอร์ใหม่) — ตัวเล็ก สีจาง วางไว้ใต้บับเบิลข้อความแต่ละอัน
+   (ดู bubbleColumn ใน java.js) แสดงเป็น HH:MM:SS มีวินาทีด้วยตามที่ขอ */
+.msg-time {
+    font-size: 11px;
+    color: #9a9284;
+    margin-top: 3px;
+    padding: 0 4px;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+/* แหล่งที่มา (ชื่อไฟล์คู่มือ) ของคำตอบบอท วางไว้ข้างๆ เวลาในแถวเดียวกัน (ฟีเจอร์ใหม่ —
+   ดู .msg-meta-row/.msg-source ใน java.js) ไม่แก้ไข .msg-time เดิมด้านบนแม้แต่บรรทัดเดียว
+   แค่ครอบด้วยแถวใหม่แล้วเซ็ต margin-top ของ .msg-time ใหม่เฉพาะตอนอยู่ในแถวนี้เท่านั้น
+   (กันไม่ให้เวลาเลื่อนลงจากแนวกึ่งกลางแถวเพราะ margin-top เดิม) */
+.msg-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 100%;
+    margin-top: 3px;
+}
+.msg-meta-row .msg-time {
+    margin-top: 0;
+}
+.msg-source {
+    font-size: 11px;
+    color: #9a9284;
+    padding: 0 4px;
+    line-height: 1.4;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+.msg-source:empty {
+    display: none;
 }
 
 
@@ -907,4 +935,575 @@ html, body {
     }
     #titleChat { font-size: 16px; }
     .chat-avatar { width: 30px; height: 30px; font-size: 16px; }
+}
+
+/* =========================================================
+   12) คำถามแนะนำประจำปี — ปุ่มบนแถบเมนู + ป๊อบอัพ (chatbot.html) — เพิ่มใหม่
+   หมายเหตุ: เป็นการ "เพิ่ม" กฎใหม่เท่านั้น ไม่แก้ไข/ลบกฎเดิมข้างบนแม้แต่บรรทัดเดียว
+   ========================================================= */
+/* ปุ่ม "คำถามแนะนำ" ใช้คลาส .naechat เดิมร่วมกับปุ่ม "แชทใหม่" อยู่แล้ว จึงหน้าตาเข้าชุดกัน
+   โดยอัตโนมัติ — ซ่อนไว้ก่อนด้วยค่าเริ่มต้นนี้ แล้ว java.js จะเปิดให้เห็นเฉพาะตอนที่รุ่นนี้
+   มีคำถามแนะนำจริงๆ */
+#suggestedQuestionsBtn {
+    display: none;
+}
+
+.sq-modal-overlay {  /* ฉากหลังมืดครอบทั้งจอ ซ่อนด้วย display:none ค่าเริ่มต้น เปิดด้วยคลาส .open (ผูก/ถอดโดย java.js) */
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(44, 8, 16, 0.55);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.sq-modal-overlay.open {
+    display: flex;
+}
+
+.sq-modal {  /* กล่องป๊อบอัพจริง (อยู่ตรงกลางฉากหลังมืด) */
+    background-color: #ffffff;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    width: 100%;
+    max-width: 480px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.sq-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--maroon-800), var(--maroon-950));
+    flex-shrink: 0;
+}
+.sq-modal-header h4 {
+    margin: 0;
+    color: #fdf6e3;
+    font-size: 17px;
+}
+.sq-modal-header h4::after { display: none; }
+
+.sq-modal-close {
+    background: transparent;
+    border: none;
+    color: #fdf6e3;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 4px;
+    transition: 0.2s ease;
+}
+.sq-modal-close:hover { color: var(--gold-400); }
+
+.sq-modal-body {
+    padding: 18px 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sq-modal-empty {
+    color: var(--ink-500);
+    font-size: 14px;
+    text-align: center;
+    margin: 10px 0;
+}
+
+.suggested-question-chip {  /* ปุ่มคำถามแนะนำแต่ละอันในป๊อบอัพ กดแล้วส่งคำถามนั้นเข้าแชททันที (ดู java.js) */
+    font-family: 'Prompt', sans-serif;
+    font-size: 13.5px;
+    padding: 10px 16px;
+    border: 1px solid var(--gold-500);
+    background-color: var(--cream-50);
+    color: var(--maroon-800);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    text-align: left;
+    white-space: normal;
+    line-height: 1.5;
+}
+.suggested-question-chip:hover {
+    background-color: var(--gold-500);
+    color: var(--maroon-950);
+}
+
+@media (max-width: 480px) {
+    #suggestedQuestionsBtn { font-size: 12px; }
+}
+
+/* =========================================================
+   13) จัดการ "คำถามแนะนำประจำปี" ฝั่งแอดมิน (upload.html) — เพิ่มใหม่
+   หมายเหตุ: เป็นการ "เพิ่ม" กฎใหม่เท่านั้น ไม่แก้ไข/ลบกฎเดิมข้างบนแม้แต่บรรทัดเดียว
+   ========================================================= */
+#sqTitle {
+    font-size: 20px;
+    margin-top: 0;
+    margin-bottom: 6px;
+}
+
+.sq-hint {
+    color: var(--ink-500);
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 0 0 16px;
+}
+
+#sqForm {
+    text-align: left;
+    margin-bottom: 6px;
+}
+
+input#sqYear {
+    padding: 10px 12px;
+    margin-right: 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: 'Prompt', sans-serif;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+    width: 220px;
+    transition: border-color 0.25s ease;
+}
+input#sqYear:focus { border-color: var(--gold-500); }
+
+input#sqQuestion {
+    padding: 10px 12px;
+    margin-right: 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: 'Prompt', sans-serif;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+    width: 360px;
+    max-width: 100%;
+    transition: border-color 0.25s ease;
+}
+input#sqQuestion:focus { border-color: var(--gold-500); }
+
+.sq-empty {
+    color: var(--ink-500);
+    font-style: italic;
+}
+
+/* แถบนำเข้าคำถามแนะนำจากไฟล์ Excel — เพิ่มใหม่ */
+.sq-import-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 4px 0 18px;
+    padding: 12px 14px;
+    background-color: var(--cream-50);
+    border: 1px dashed var(--gold-500);
+    border-radius: var(--radius-md);
+}
+
+.sq-import-label {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--ink-900);
+    white-space: nowrap;
+}
+
+#sqImportBtn {
+    padding: 8px 18px;
+    border: none;
+    background-color: var(--maroon-800);
+    color: white;
+    border-radius: 6px;
+    font-family: 'Prompt', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+#sqImportBtn:hover { background-color: var(--gold-500); color: var(--maroon-950); }
+#sqImportBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.sq-import-hint {
+    color: var(--ink-500);
+    font-size: 12px;
+    width: 100%;
+}
+
+@media (max-width: 640px) {
+    input#sqYear, input#sqQuestion { width: 100%; margin: 6px 0; max-width: 100%; }
+    .sq-import-bar { flex-direction: column; align-items: flex-start; }
+}
+
+/* =========================================================
+   14) แถบด้านข้างพับเก็บได้ (chatbot.html) — เพิ่มใหม่ (แทนที่แถบเลื่อนแบบเดิมทั้งหมด)
+   หมายเหตุ: เป็นการ "เพิ่ม" กฎใหม่เท่านั้น ไม่แก้ไข/ลบกฎเดิมข้างบนแม้แต่บรรทัดเดียว — ใช้วิธี
+   ครอบ .chat-display/.input-area เดิมด้วย wrapper ใหม่ (.chat-body-layout/.chat-main) ให้
+   .chat-display flex:1 / .input-area เดิมทำงานเหมือนเดิมทุกประการ แค่ย้ายไปอยู่ในคอลัมน์ขวา
+   ของแถวแทนที่จะเป็นลูกตรงของ body ========================================================= */
+
+/* ต้นตอจริงของช่องว่างเหนือปุ่ม ☰ / เหนือแถบด้านข้าง: กฎ "hr { margin: 30px 0; }" ที่ใช้ร่วมกับ
+   หน้าอื่น (upload.html ฯลฯ) ทำให้เส้นคั่นใต้แถบเมนูในหน้าแชทมีช่องว่าง 30px ทั้งบนและล่างไปด้วย
+   จำกัดขอบเขตเฉพาะหน้าแชท (body.bg-Chatbot) เท่านั้น ไม่กระทบเส้น hr ของหน้าอื่นที่ยังใช้ระยะ 30px เดิม */
+body.bg-Chatbot hr {
+    margin: 0;
+}
+
+.chat-body-layout {  /* แถวนอกสุดใต้ navbar แบ่งเป็น 2 คอลัมน์: แถบด้านข้าง (.app-sidebar) + พื้นที่แชท (.chat-main) */
+    flex: 1;
+    display: flex;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.chat-main {  /* คอลัมน์ขวา ครอบ .chat-display + .input-area เดิม (ย้ายมาจากการเป็นลูกตรงของ body) */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.app-sidebar {  /* คอลัมน์ซ้าย: ปุ่มพับ, คำถามแนะนำ, เลือกโมเดล, ประวัติแชท, ชื่อผู้ใช้, ออกจากระบบ */
+    width: 260px;
+    flex-shrink: 0;
+    background-color: #ffffff;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+body.sidebar-collapsed .app-sidebar {  /* คลาสนี้ถูกเพิ่ม/ถอดที่ <body> โดย collapseSidebar()/expandSidebar() ใน java.js */
+    display: none;
+}
+
+.sidebar-top {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px 10px 0;
+    flex-shrink: 0;
+}
+
+.sidebar-collapse-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--ink-500);
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    transition: 0.2s ease;
+}
+.sidebar-collapse-btn:hover {
+    background-color: var(--cream-50);
+    color: var(--maroon-800);
+    border-color: var(--gold-500);
+}
+
+.sidebar-user-btn,
+.sidebar-action-btn {
+    margin: 6px 14px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    background-color: var(--cream-50);
+    color: var(--maroon-800);
+    border-radius: 8px;
+    font-family: 'Prompt', sans-serif;
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: 0.2s ease;
+    flex-shrink: 0;
+}
+.sidebar-user-btn:hover,
+.sidebar-action-btn:hover {
+    background-color: var(--gold-500);
+    color: var(--maroon-950);
+    border-color: var(--gold-500);
+}
+
+/* ปุ่ม "ออกจากระบบ" ท้ายแถบด้านข้าง — ใช้โทนแดง (สีเดียวกับ .delete-file-btn ของ
+   upload.html) แยกจากปุ่มอื่นในแถบ ให้เห็นชัดว่าเป็นการกระทำคนละแบบ (ออกจากหน้า
+   ไม่ใช่แค่สลับเมนู) สืบทอด padding/ระยะห่าง/ฟอนต์จาก .sidebar-action-btn เดิมทุกอย่าง
+   แค่ทับสีเฉพาะจุด */
+.sidebar-logout-btn {
+    border-color: #b3261e;
+    color: #b3261e;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.sidebar-logout-btn:hover {
+    background-color: #b3261e;
+    color: #ffffff;
+    border-color: #b3261e;
+}
+
+/* ไอคอนรูปประตู+ลูกศร (ตามภาพที่ขอ) แทนอิโมจิ 🚪 เดิม — ไฟล์รูปนี้พื้นหลังโปร่งใสแล้ว
+   สีเส้นเป็นสีเข้มเกือบดำอยู่แล้ว จึงอ่านชัดได้ทั้งพื้นครีมปกติและพื้นแดงตอน hover
+   ไม่ต้องปรับสีเพิ่ม */
+.sidebar-logout-icon {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    object-fit: contain;
+}
+
+.sidebar-divider {
+    height: 1px;
+    background-color: var(--border);
+    margin: 10px 14px;
+    flex-shrink: 0;
+}
+
+.sidebar-section-label {
+    padding: 0 14px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-500);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    flex-shrink: 0;
+}
+
+/* ปุ่มกางแถบด้านข้าง (☰) — ย้ายขึ้นไปอยู่ในแถบเมนูด้านบน (.navbar-left) ติดกับชื่อหน้าตามที่ขอ
+   เพื่อความสวยงาม (เดิมเป็นกล่องขาวลอยอยู่เหนือพื้นที่แชท) ปรับสีให้เข้ากับพื้นหลังไล่สีแดงเลือดหมู
+   ของ .navbar แทนพื้นขาวเดิม */
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sidebar-expand-btn {  /* ปุ่ม ☰ ในแถบเมนูบน โผล่มาเฉพาะตอนแถบด้านข้างถูกพับเก็บ (ดู body.sidebar-collapsed ด้านล่าง) */
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    background-color: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 8px;
+    color: #fdf6e3;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+.sidebar-expand-btn:hover {
+    background-color: rgba(255, 255, 255, 0.22);
+    border-color: var(--gold-500);
+}
+body.sidebar-collapsed .sidebar-expand-btn {
+    display: flex;
+}
+
+.history-list {  /* flex:1 ดันปุ่มชื่อผู้ใช้/ออกจากระบบด้านล่างให้ติดขอบล่างของแถบเสมอ (ดูคอมเมนต์ใน chatbot.html) */
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 10px 14px;
+}
+
+.history-item {  /* แถวหนึ่งแชทในแถบประวัติ (ชื่อแชท + ปุ่มลบ) */
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 4px;
+    transition: 0.15s ease;
+}
+.history-item:hover {
+    background-color: var(--cream-50);
+}
+.history-item.active {
+    background-color: rgba(201, 162, 39, 0.16);
+}
+
+.history-item-title {
+    flex: 1;
+    font-size: 13.5px;
+    color: var(--ink-900);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.history-item-delete {
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    color: var(--ink-500);
+    font-size: 15px;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: 0.15s ease;
+}
+.history-item-delete:hover {
+    color: #b3261e;
+    background-color: rgba(179, 38, 30, 0.1);
+}
+
+.history-empty {
+    color: var(--ink-500);
+    font-size: 13px;
+    text-align: center;
+    padding: 20px 10px;
+}
+
+@media (max-width: 480px) {
+    .app-sidebar { width: 220px; }
+}
+
+/* =========================================================
+   15) หน้า Developer Console — dev.html
+   ธีมแยกต่างหาก (Dark / Terminal, ฟอนต์ IBM Plex Mono) เฉพาะหน้านี้
+   เท่านั้น ไม่ใช้ธีมหลัก (เลือดหมู/ทอง/ครีม) ของหน้าอื่น — ย้ายมาจาก
+   <style> ที่ฝังอยู่ในตัว dev.html เดิม มารวมไว้ในไฟล์ CSS กลางไฟล์นี้
+   ตามที่ขอ โดยสโคปทุกกฎด้วย "body.bg-dev" (ดู class ใหม่บน <body> ของ
+   dev.html) กันไม่ให้สไตล์ทับซ้อนกับหน้าอื่นๆ ในไฟล์นี้ ไม่มีการแก้ไข
+   ค่าสีหรือดีไซน์ใดๆ จากต้นฉบับแม้แต่จุดเดียว
+
+   หมายเหตุ (ตรวจสอบตอนเพิ่มคอมเมนต์): dev.html ไฟล์ปัจจุบันมี <style> ของตัวเองฝังอยู่ในหน้า
+   ครบถ้วนอยู่แล้ว และ <body> ของมันไม่มี class="bg-dev" (เป็น <body> เปล่าๆ) ทำให้กฎทั้งหมด
+   ในหมวดนี้ (บรรทัดถัดจากนี้จนถึงก่อนหมวด 16) ยังไม่ถูกใช้งานจริง — dev.html ใช้ CSS ของตัวเอง
+   ในไฟล์ตัวเองแทน ไม่กระทบการทำงานใดๆ เพราะทั้งสองชุดมีค่าเหมือนกันทุกประการ แค่เป็นชุดสำรอง
+   ที่เตรียมไว้เผื่อย้าย dev.html มาใช้ style.css กลางในอนาคต
+   ========================================================= */
+body.bg-dev {
+    --dev-bg:         #0f120d;
+    --dev-panel:      #161a12;
+    --dev-panel-edge: #262e1d;
+    --dev-text:       #e7e6d9;
+    --dev-muted:      #80876f;
+    --dev-amber:      #ffb300;
+    --dev-amber-dim:  #8a6a17;
+    --dev-green:      #6fd99a;
+    --dev-red:        #ff6b5e;
+
+    margin: 0;
+    background: var(--dev-bg);
+    color: var(--dev-text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ---------- top bar ---------- */
+body.bg-dev .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--dev-panel-edge);
+    background: linear-gradient(180deg, #14180f, #0f120d);
+}
+body.bg-dev .topbar .brand { color: var(--dev-amber); font-weight: 700; letter-spacing: .5px; }
+body.bg-dev .topbar .brand span { color: var(--dev-muted); font-weight: 400; }
+body.bg-dev .status { display: flex; align-items: center; gap: 8px; color: var(--dev-muted); font-size: 12px; }
+body.bg-dev .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dev-muted); flex: none; }
+body.bg-dev .dot.ok { background: var(--dev-green); box-shadow: 0 0 8px var(--dev-green); }
+body.bg-dev .dot.bad { background: var(--dev-red); box-shadow: 0 0 8px var(--dev-red); }
+
+body.bg-dev .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 24px 60px; }
+body.bg-dev .hint { color: var(--dev-muted); font-size: 12.5px; margin: 0 0 22px; }
+body.bg-dev .hint b { color: var(--dev-text); }
+
+body.bg-dev .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 900px) { body.bg-dev .grid { grid-template-columns: 1fr; } }
+
+/* ---------- terminal panel ---------- */
+body.bg-dev .pane {
+    background: var(--dev-panel);
+    border: 1px solid var(--dev-panel-edge);
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+}
+body.bg-dev .pane-head {
+    padding: 9px 14px;
+    background: #1b2014;
+    border-bottom: 1px solid var(--dev-panel-edge);
+    color: var(--dev-amber);
+    font-size: 12.5px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px;
+}
+body.bg-dev .pane-head .cmd:before { content: "$ "; color: var(--dev-amber-dim); }
+body.bg-dev .pane-head .meta { color: var(--dev-muted); font-size: 11.5px; white-space: nowrap; }
+body.bg-dev .pane-body { padding: 12px 14px; flex: 1; overflow: auto; max-height: 420px; }
+
+body.bg-dev table { width: 100%; border-collapse: collapse; font-size: 12.8px; }
+body.bg-dev th { text-align: left; color: var(--dev-muted); font-weight: 500; padding: 6px 8px; border-bottom: 1px solid var(--dev-panel-edge); }
+body.bg-dev td { padding: 6px 8px; border-bottom: 1px solid #1d2316; vertical-align: top; }
+body.bg-dev tr:hover td { background: #1a1f13; }
+body.bg-dev .empty { color: var(--dev-muted); padding: 10px 4px; font-style: italic; }
+
+body.bg-dev button {
+    font-family: inherit; font-size: 11.5px; cursor: pointer;
+    background: transparent; border: 1px solid var(--dev-amber-dim); color: var(--dev-amber);
+    padding: 4px 9px; border-radius: 4px;
+}
+body.bg-dev button:hover { background: var(--dev-amber); color: #1a1500; }
+body.bg-dev button.danger { border-color: #7a2c26; color: var(--dev-red); }
+body.bg-dev button.danger:hover { background: var(--dev-red); color: #220a07; }
+body.bg-dev button.ghost { border-color: var(--dev-panel-edge); color: var(--dev-muted); }
+body.bg-dev button.ghost:hover { background: var(--dev-panel-edge); color: var(--dev-text); }
+
+body.bg-dev .row-actions { display: flex; gap: 6px; }
+body.bg-dev .clickable { cursor: pointer; color: var(--dev-text); }
+body.bg-dev .clickable:hover { color: var(--dev-amber); text-decoration: underline; }
+
+body.bg-dev .chunk-box { font-size: 12px; white-space: pre-wrap; color: var(--dev-text); background: #10130c; border: 1px solid var(--dev-panel-edge); border-radius: 4px; padding: 8px; margin-bottom: 8px; }
+body.bg-dev .chunk-idx { color: var(--dev-amber-dim); margin-right: 6px; }
+
+body.bg-dev .refresh-bar { display: flex; justify-content: flex-end; margin-bottom: 14px; }
+
+body.bg-dev::-webkit-scrollbar,
+body.bg-dev ::-webkit-scrollbar { width: 8px; height: 8px; }
+body.bg-dev::-webkit-scrollbar-thumb,
+body.bg-dev ::-webkit-scrollbar-thumb { background: var(--dev-panel-edge); border-radius: 4px; }
+
+/* =========================================================
+   16) เลือกโมเดล AI ในหน้าแชท — เฉพาะอาจารย์/บุคลากร (chatbot.html) — เพิ่มใหม่
+   หมายเหตุ: เป็นการ "เพิ่ม" กฎใหม่เท่านั้น ไม่แก้ไข/ลบกฎเดิมข้างบนแม้แต่บรรทัดเดียว —
+   ใช้ธีมเดียวกับปุ่มในแถบด้านข้าง (.sidebar-action-btn) เพื่อให้กลมกลืนกัน
+   ========================================================= */
+.model-select-block {  /* กล่องครอบ dropdown เลือกโมเดล ซ่อนด้วย inline style="display:none" ใน chatbot.html ค่าเริ่มต้น java.js เป็นคนสั่งเปิดให้เห็น */
+    margin: 6px 14px 4px;
+    flex-shrink: 0;
+}
+.model-select-block .sidebar-section-label {
+    padding: 0 0 6px;
+}
+
+.sidebar-model-select {  /* ตัว <select> เลือกโมเดล ใช้โทนสี/ฟอนต์เดียวกับปุ่มอื่นในแถบด้านข้าง */
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid var(--border);
+    background-color: var(--cream-50);
+    color: var(--maroon-800);
+    border-radius: 8px;
+    font-family: 'Prompt', sans-serif;
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.sidebar-model-select:focus {
+    border-color: var(--gold-500);
+    box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.18);
+}
+.sidebar-model-select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }

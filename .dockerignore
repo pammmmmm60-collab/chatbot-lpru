@@ -1,0 +1,39 @@
+# --- Version control ---
+.git
+.gitignore
+
+# --- Python cache / build artifacts ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- Virtual environments (อย่า copy เข้า image) ---
+venv/
+.venv/
+env/
+
+# --- ข้อมูล runtime ที่ผูกผ่าน volume อยู่แล้ว ไม่ต้อง bake เข้า image ---
+vector_store/
+uploads/
+conversations/
+chat_history/
+lpru_chatbot.db
+suggested_questions.json
+students_roster.json
+
+# --- Windows / เครื่องมือเฉพาะที่ ไม่ควรอยู่ใน image ---
+ngrok.exe
+start_chatbot.bat
+package_for_handoff.ps1
+
+# --- ไฟล์ dev / เอกสาร ---
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+.idea/
+.vscode/

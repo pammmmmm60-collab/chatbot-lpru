@@ -4,8 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Chatbot LPRU</title>
-    <link rel="stylesheet" href="style.css?v=10">
+    <link rel="stylesheet" href="style.css?v=13">
 </head>
+<!-- หน้าแรก/หน้าต้อนรับของเว็บทั้งระบบ (เสิร์ฟที่ path "/" และ "/pang.html" ใน main.py)
+     เป็นแค่หน้าตกแต่ง ไม่มีฟอร์ม/logic ผูกกับ java.js เลย มีปุ่มเดียวคือ "เริ่มต้นใช้งาน.."
+     ที่ลิงก์ตรงไปหน้า user.html (หน้ากรอกรหัสเข้าใช้งานจริง) ดอกกาสะลอง (SVG 7 กลีบ) เป็น
+     ลวดลายตกแต่งพื้นหลัง วาดด้วย SVG path ล้วนๆ ไม่ใช่รูปภาพ -->
 <body class="bg-pang">
 
     <div class="pang-hero">
@@ -21,6 +25,8 @@
                 <svg class="kasalong-petal p7" viewBox="0 0 64 64"><g><path class="petal-shape" d="M32 4 C40 16 40 24 32 32 C24 24 24 16 32 4 Z"/><path class="petal-shape" d="M32 32 C44 28 52 32 58 42 C48 46 40 44 32 32 Z"/><path class="petal-shape" d="M32 32 C36 44 32 52 22 58 C18 48 20 40 32 32 Z"/><path class="petal-shape" d="M32 32 C20 36 12 32 6 22 C16 18 24 20 32 32 Z"/><path class="petal-shape" d="M32 32 C28 20 32 12 42 6 C46 16 44 24 32 32 Z"/><circle class="petal-center" cx="32" cy="32" r="5"/></g></svg>
             </div>
             <p class="pang-message">มีอะหยังหื้อน้องกาสะลองจ่วยก่อเจ้า?</p>
+            <!-- คำอธิบายขอบเขตการใช้งาน บอกผู้ใช้ตั้งแต่หน้าแรกว่าแชทบอทตอบได้แค่เรื่องคู่มือกิจกรรมนักศึกษาเท่านั้น กันผู้ใช้คาดหวังผิด/ถามเรื่องอื่นที่ระบบตอบไม่ได้ -->
+            <p class="pang-scope">น้องกาสะลองช่วยตอบคำถามเกี่ยวกับ "คู่มือกิจกรรมนักศึกษา" เท่านั้น ไม่สามารถพูดคุยหรือตอบคำถามเรื่องอื่นได้เจ้า</p>
             <a href="user.html" class="pang-cta">เริ่มต้นใช้งาน..</a>
         </div>
 

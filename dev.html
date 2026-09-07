@@ -176,6 +176,43 @@
 <script>
 const API = "http://localhost:8000";
 
+// แก้ไขความปลอดภัย: เดิมหน้านี้เรียก /dev/* โดยไม่ผ่านการยืนยันตัวตนเลย (ต่างจาก /admin/*
+// ทุกตัวที่มี Depends(verify_admin_session) ครบ) ใครก็เข้าถึง URL เซิร์ฟเวอร์ได้ก็ดูรายชื่อ
+// ผู้ใช้ทั้งหมด/ลบผู้ใช้/ลบเอกสารได้ทันทีโดยไม่ต้องล็อกอิน — ตอนนี้ /dev/* ทุก endpoint ใน
+// main.py ต้องมี Authorization: Bearer <admin_token> เหมือนกับ /admin/* แล้ว หน้านี้จึงต้อง
+// เช็ค token ก่อนโหลด (เด้งไปหน้าล็อกอินแอดมินถ้ายังไม่ได้ล็อกอิน) และแนบ token ไปกับทุก
+// request ที่ยิงไปหา /dev/* ผ่าน devFetch() ด้านล่าง — ใช้ admin_token key เดียวกับที่
+// loginadmin.html/upload.html ตั้งไว้ใน sessionStorage (แชร์กันได้เพราะ serve จาก backend
+// เดียวกัน คนละแท็บ/คนละหน้า แต่ origin เดียวกัน)
+if (!sessionStorage.getItem("admin_token")) {
+  alert("กรุณาเข้าสู่ระบบแอดมินก่อน");
+  window.location.href = "loginadmin.html";
+}
+
+function authHeaders(){
+  const token = sessionStorage.getItem("admin_token");
+  return token ? { "Authorization": "Bearer " + token } : {};
+}
+
+// wrapper กลางสำหรับทุก request ที่ยิงไปหา /dev/* (ยกเว้น /api/health ที่ตั้งใจเปิดสาธารณะ
+// อยู่แล้ว) แนบ Authorization header ให้อัตโนมัติ และถ้าเจอ 401 (token หมดอายุ/ไม่ถูกต้อง)
+// จะเคลียร์ token เก่าทิ้ง แจ้งเตือน แล้วพากลับไปหน้าล็อกอินทันที พร้อม throw error พิเศษ
+// เพื่อให้โค้ดที่เรียกใช้รู้ว่านี่คือ "กำลังจะเด้งไปหน้าล็อกอินแล้ว" ไม่ใช่ backend ล่มจริงๆ
+// (กัน catch ของฟังก์ชันที่เรียกใช้โชว์ alert ซ้ำซ้อน "เชื่อมต่อ backend ไม่ได้" ทับกัน)
+async function devFetch(path, options = {}){
+  const res = await fetch(`${API}${path}`, {
+    ...options,
+    headers: { ...(options.headers || {}), ...authHeaders() }
+  });
+  if (res.status === 401){
+    sessionStorage.removeItem("admin_token");
+    alert("เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่");
+    window.location.href = "loginadmin.html";
+    throw new Error("unauthorized");
+  }
+  return res;
+}
+
 async function loadHealth(){
   const dot = document.getElementById("healthDot");
   const txt = document.getElementById("healthText");
@@ -194,7 +231,7 @@ async function loadUploads(){
   const body = document.getElementById("uploadsBody");
   const meta = document.getElementById("uploadsMeta");
   try{
-    const res = await fetch(`${API}/dev/uploads`);
+    const res = await devFetch(`/dev/uploads`);
     const data = await res.json();
     meta.textContent = `${data.files.length} files`;
     if (data.files.length === 0){
@@ -211,6 +248,7 @@ async function loadUploads(){
       </tr>
     `).join("");
   }catch(e){
+    if (e && e.message === "unauthorized") return;
     body.innerHTML = `<tr><td class="empty" colspan="3">เชื่อมต่อ backend ไม่ได้</td></tr>`;
     meta.textContent = "error";
   }
@@ -220,7 +258,7 @@ async function loadUsers(){
   const body = document.getElementById("usersBody");
   const meta = document.getElementById("usersMeta");
   try{
-    const res = await fetch(`${API}/dev/users`);
+    const res = await devFetch(`/dev/users`);
     const data = await res.json();
     meta.textContent = `${data.users.length} accounts`;
     if (data.users.length === 0){
@@ -236,6 +274,7 @@ async function loadUsers(){
       </tr>
     `).join("");
   }catch(e){
+    if (e && e.message === "unauthorized") return;
     body.innerHTML = `<tr><td class="empty" colspan="2">เชื่อมต่อ backend ไม่ได้</td></tr>`;
     meta.textContent = "error";
   }
@@ -245,7 +284,7 @@ async function loadDocuments(){
   const body = document.getElementById("docsBody");
   const meta = document.getElementById("docsMeta");
   try{
-    const res = await fetch(`${API}/dev/documents`);
+    const res = await devFetch(`/dev/documents`);
     const data = await res.json();
     meta.textContent = `${data.documents.length} docs`;
     if (data.documents.length === 0){
@@ -262,6 +301,7 @@ async function loadDocuments(){
       </tr>
     `).join("");
   }catch(e){
+    if (e && e.message === "unauthorized") return;
     body.innerHTML = `<tr><td class="empty" colspan="3">เชื่อมต่อ backend ไม่ได้</td></tr>`;
     meta.textContent = "error";
   }
@@ -277,7 +317,7 @@ async function viewChunks(source){
   bodyEl.innerHTML = `<div class="empty">กำลังโหลด chunk...</div>`;
 
   try{
-    const res = await fetch(`${API}/dev/documents/${encodeURIComponent(source)}/chunks`);
+    const res = await devFetch(`/dev/documents/${encodeURIComponent(source)}/chunks`);
     if (!res.ok){
       bodyEl.innerHTML = `<div class="empty">ไม่พบ chunk ของไฟล์นี้</div>`;
       metaEl.textContent = "0 chunks";
@@ -289,6 +329,7 @@ async function viewChunks(source){
       <div class="chunk-box"><span class="chunk-idx">#${c.index}</span>${escapeHtml(c.text)}</div>
     `).join("");
   }catch(e){
+    if (e && e.message === "unauthorized") return;
     bodyEl.innerHTML = `<div class="empty">เชื่อมต่อ backend ไม่ได้</div>`;
     metaEl.textContent = "error";
   }
@@ -297,35 +338,44 @@ async function viewChunks(source){
 async function deleteUpload(filename){
   if (!confirm(`ลบไฟล์ '${filename}' และ chunk ที่เกี่ยวข้องทั้งหมดถาวร?`)) return;
   try{
-    const res = await fetch(`${API}/dev/uploads/${encodeURIComponent(filename)}`, { method: "DELETE" });
+    const res = await devFetch(`/dev/uploads/${encodeURIComponent(filename)}`, { method: "DELETE" });
     const data = await res.json();
     alert(data.message || data.detail);
     loadUploads();
     loadDocuments();
-  }catch(e){ alert("ลบไม่สำเร็จ: เชื่อมต่อ backend ไม่ได้"); }
+  }catch(e){
+    if (e && e.message === "unauthorized") return;
+    alert("ลบไม่สำเร็จ: เชื่อมต่อ backend ไม่ได้");
+  }
 }
 
 async function deleteDoc(source){
   if (!confirm(`ลบ chunk ทั้งหมดของ '${source}' ออกจาก vector store (และลบไฟล์ใน uploads/ ถ้ายังมีอยู่)?`)) return;
   try{
-    const res = await fetch(`${API}/dev/uploads/${encodeURIComponent(source)}`, { method: "DELETE" });
+    const res = await devFetch(`/dev/uploads/${encodeURIComponent(source)}`, { method: "DELETE" });
     const data = await res.json();
     alert(data.message || data.detail);
     loadDocuments();
     loadUploads();
     document.getElementById("chunkBody").innerHTML = `<div class="empty">ยังไม่เลือกเอกสาร — กดชื่อไฟล์ในตาราง "เอกสาร" เพื่อดู chunk</div>`;
     document.getElementById("chunkMeta").textContent = "เลือกเอกสารจากด้านซ้าย";
-  }catch(e){ alert("ลบไม่สำเร็จ: เชื่อมต่อ backend ไม่ได้"); }
+  }catch(e){
+    if (e && e.message === "unauthorized") return;
+    alert("ลบไม่สำเร็จ: เชื่อมต่อ backend ไม่ได้");
+  }
 }
 
 async function deleteUser(username){
   if (!confirm(`ลบบัญชี '${username}' ถาวร?`)) return;
   try{
-    const res = await fetch(`${API}/dev/users/${encodeURIComponent(username)}`, { method: "DELETE" });
+    const res = await devFetch(`/dev/users/${encodeURIComponent(username)}`, { method: "DELETE" });
     const data = await res.json();
     alert(data.message || data.detail);
     loadUsers();
-  }catch(e){ alert("ลบไม่สำเร็จ: เชื่อมต่อ backend ไม่ได้"); }
+  }catch(e){
+    if (e && e.message === "unauthorized") return;
+    alert("ลบไม่สำเร็จ: เชื่อมต่อ backend ไม่ได้");
+  }
 }
 
 function formatBytes(n){
